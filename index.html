@@ -961,18 +961,27 @@ body {
     </style>
 </head>
 
-<audio id="audioPlayer" loop style="display: none;">
-  <source src="./On-Division-St.m4a" type="audio/mp4">
-</audio>
+<audio id="audioPlayer" style="display: none;"></audio>
 
 <script>
   let audioStarted = false;
   const audioPlayer = document.getElementById('audioPlayer');
   
+  // Lista de canciones en el orden deseado
+  const songs = [
+    './On-Division-St.m4a',
+    './The-Veiled-Monolith.m4a'  // Agrega aquí más canciones si necesitas
+  ];
+  let currentSongIndex = 0;
+
+  function loadSong() {
+    audioPlayer.src = songs[currentSongIndex];
+  }
+
   function startAudio() {
     if (audioStarted) return;
     
-    // SOLUCIÓN MÁS SIMPLE: Solo usar el elemento audio sin AudioContext
+    loadSong();
     audioPlayer.play()
       .then(() => {
         audioStarted = true;
@@ -980,11 +989,17 @@ body {
       })
       .catch(e => {
         console.log('Error al iniciar audio:', e.name);
-        // No hacemos nada más, el usuario puede intentar de nuevo
       });
   }
-  
-  // Eventos simples - eliminar duplicados
+
+  // Cuando termina una canción, pasar a la siguiente
+  audioPlayer.addEventListener('ended', () => {
+    currentSongIndex = (currentSongIndex + 1) % songs.length;
+    loadSong();
+    audioPlayer.play();
+  });
+
+  // Eventos de inicio
   document.addEventListener('click', startAudio);
   document.addEventListener('touchstart', startAudio);
 </script>
